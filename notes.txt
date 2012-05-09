@@ -1,0 +1,11 @@
+pip install beautifulsoup
+pip install boto
+pip install feedparser
+pip install py-dom-xpath
+#?pip install python-memcached
+pip install webob
+#?pip install cherrypy
+pip install ninja2
+pip install beaker
+pip install passlib
+pip install redis

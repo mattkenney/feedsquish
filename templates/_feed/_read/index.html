@@ -1,0 +1,63 @@
+{% extends "_base.html" %}
+{#
+
+Copyright 2012 Matt Kenney
+
+This file is part of Feedsquish.
+
+Feedsquish is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Feedsquish is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Feedsquish.  If not, see <http://www.gnu.org/licenses/>.
+
+#}
+{% block content %}
+<div class="buttons">
+<form method="post" action="{{ root }}/">
+<table class="wide"><tr><td class="single">
+<input name="feed" type="hidden" value="{{ parameters.feed }}" />
+<input name="show" type="hidden" value="{{ parameters.show }}" />
+<input name="date" type="hidden" value="{{ article.date }}" />
+<input id="hide-next" name="next:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Next" />
+<input name="skip:{{ article.subid }}:{{ article.artid }}" type="submit" value="Next" />
+<input name="hide:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Return" />
+<input type="submit" value="Return" />
+</td></tr></table>
+</form>
+<script type="text/javascript">document.getElementById('hide-next').focus()</script>
+</div>
+<div class="content">
+<div class="title">{{ article.feedName }} - {{ article.name|safe }}</div>
+<div class="dateline">{{ article.articleDate }}
+{% if article.category %} - {{ article.category }}{% endif %}
+- {{ content|safelength|format_IEEE1541 }}</div>
+<div>&#160;</div>
+<div>{{ content|safe }}</div>
+<div>&#160;</div>
+</div>
+<div class="footer">
+<form method="post" action="{{ root }}/">
+<table class="wide"><tr><td>
+<a href="{{ article.articleUrl }}" target="_blank">source</a>
+</td><td class="right">
+<a href="{{ root }}/feed/{{ article.subid|encode_segment }}/">setup</a>
+</td></tr></table>
+<table class="wide"><tr><td class="single">
+<input name="feed" type="hidden" value="{{ parameters.feed }}" />
+<input name="show" type="hidden" value="{{ parameters.show }}" />
+<input name="next:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Next" />
+<input name="skip:{{ article.subid }}:{{ article.artid }}" type="submit" value="Next" />
+<input name="hide:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Return" />
+<input type="submit" value="Return" />
+</td></tr></table>
+</form>
+</div>
+{% endblock %}

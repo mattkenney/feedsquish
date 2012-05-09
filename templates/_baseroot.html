@@ -1,0 +1,45 @@
+{#
+
+Copyright 2012 Matt Kenney
+
+This file is part of Feedsquish.
+
+Feedsquish is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Feedsquish is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Feedsquish.  If not, see <http://www.gnu.org/licenses/>.
+
+#}
+<!DOCTYPE html>
+<!-- source code: https://github.com/mattkenney/feedsquish -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+{% block meta %}
+<meta charset="UTF-8" />
+<meta content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;" name="viewport" />
+<link href="/css/default.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+<title>{% block title %}Feedsquish{% endblock %}</title>
+</head>
+<body>
+{% block header %}
+{% endblock %}
+{% block content %}
+{% endblock %}
+{% block footer %}
+{% if parameters.xdebug %}
+<pre>
+{{ context }}
+</pre>
+{% endif %}
+{% endblock %}
+</body>
+</html>

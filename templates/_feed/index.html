@@ -1,0 +1,62 @@
+{% extends "_base.html" %}
+{#
+
+Copyright 2012 Matt Kenney
+
+This file is part of Feedsquish.
+
+Feedsquish is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Feedsquish is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Feedsquish.  If not, see <http://www.gnu.org/licenses/>.
+
+#}
+{% block content %}
+<div class="setup">
+{% if errors %}
+<ul class="error">
+{% for error in errors %}
+<li>{{ error }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+<form method="post" action="{{ root }}{{ request.path }}">
+<table>
+<tbody>
+<tr><td class="required">Name:</td><td class="field"><input maxlength="16" name="feedName" size="18" type="text" value="{{ parameters.feedName }}" /></td></tr>
+<tr><td class="required">URL:</td><td class="field"><input name="feedUrl" size="48" type="text" value="{{ parameters.feedUrl }}" /></td></tr>
+<tr><td>Use GUID:</td><td class="field"><input{% if parameters.useGuid %} checked="checked"{% endif %} name="useGuid" type="checkbox" value="Y" />
+<tr><td>Remove URL Prefix:</td><td class="field"><input name="prefixRemove" size="48" type="text" value="{{ parameters.prefixRemove }}" /></td></tr>
+<tr><td>Add URL Prefix:</td><td class="field"><input name="prefixAdd" size="48" type="text" value="{{ parameters.prefixAdd }}" /></td></tr>
+<tr><td>Remove URL Suffix:</td><td class="field"><input name="suffixRemove" size="48" type="text" value="{{ parameters.suffixRemove }}" /></td></tr>
+<tr><td>Add URL Suffix:</td><td class="field"><input name="suffixAdd" size="48" type="text" value="{{ parameters.suffixAdd }}" /></td></tr>
+<tr valign="top"><td>XPath:</td><td class="field"><textarea cols="48" name="xpath" rows="3">{{ parameters.xpath }}</textarea></td></tr>
+<tr><td colspan="2">
+<input type="submit" value="Save" />
+<input name="test" type="submit" value="Test" />
+<input name="cancel" type="submit" value="Cancel" />
+{% if path_parameters.feed %}
+<input name="delete" onclick="return confirm('Delete this feed? This action cannot be undone.')" type="submit" value="Delete" />
+{% endif %}
+</td></tr>
+</tbody>
+</table>
+<input name="next" type="hidden" value="{{ next }}" />
+</form>
+Note: Feedsquish purges article listings after 60 days, whether you've read them or not.
+{% if testout %}
+<div class="testout">
+Test Result:
+<pre class="testout-pre">{{ testout }}</pre>
+</div>
+{% endif %}
+</div>
+{% endblock %}

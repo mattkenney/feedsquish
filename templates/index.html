@@ -1,0 +1,65 @@
+{% extends "_base.html" %}
+{#
+
+Copyright 2012 Matt Kenney
+
+This file is part of Feedsquish.
+
+Feedsquish is free software: you can redistribute it and/or modify it under
+the terms of the GNU Affero General Public License as published by the Free
+Software Foundation, either version 3 of the License, or (at your option) any
+later version.
+
+Feedsquish is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU Affero General Public License for more
+details.
+
+You should have received a copy of the GNU Affero General Public License
+along with Feedsquish.  If not, see <http://www.gnu.org/licenses/>.
+
+#}
+{% block title %}
+Feedsquish
+{% endblock %}
+{% block content %}
+<form method="post" action="{{ root }}{{ request.path }}">
+<input name="offset" type="hidden" value="{{ parameters.offset }}" />
+<div class="buttons"><table class="wide">
+<tr>
+<td class="narrow"><select name="feed" onchange="this.form.submit();">
+<option value="">All Feeds</option>
+{% for row in feeds %}
+<option{% if row.subid == parameters.feed %} selected="selected"{% endif %} value="{{ row.subid }}">{{ row.feedName }}{% if row.counter > 0 %} ({{ row.counter }}){% endif %}</option>
+{% endfor %}
+</select></td>
+<td class="narrow"><select name="show" onchange="this.form.submit();"><option value="">Unread</option>
+<option value="all"{% if "all" == parameters.show %} selected="selected"{% endif %}>All</option>
+</select></td>
+<td><input type="submit" class="reload" id="reload" value="Reload" />&#160;<script type="text/javascript">document.getElementById("reload").style.display="none";</script></td>
+<td class="right"><a href="feed/" class="action">setup</a></td>
+</tr>
+</table></div><div class="index"><table class="index-table">
+{% for art in articles %}
+<tr class="{{ loop.cycle('even', 'odd') }}">
+<td class="feedname" nowrap="nowrap" valign="top">{{ art.feedName }}<br />
+{% if art.unread %}
+<input type="submit" name="hide:{{ art.subid }}:{{ art.artid }}" value="Hide" />
+{% else %}
+<input type="submit" name="show:{{ art.subid }}:{{ art.artid }}" value="Show" />
+{% endif %}
+</td>
+<td class="index-title">{% if art.unread %}<b>{% endif %}<a href="feed/{{ art.subid|encode_segment }}/read/{{ art.artid|encode_segment }}/{{ qs }}">{{ art.name|default("<i>no title</i>") }}</a>{% if art.unread %}</b>{% endif %}<br />
+{{ art.articleDate }}{% if art.category %} - {{ art.category }}{% endif %}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+{% if newer or older %}
+<div class="footer right">
+{% if newer %}<a href="{{ newer }}" class="action">&lt;newer</a>{% endif %}
+{% if older %}<a href="{{ older }}" class="action">older&gt;</a>{% endif %}
+</div>
+{% endif %}
+</form>
+{% endblock %}
