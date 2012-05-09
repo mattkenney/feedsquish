@@ -1,8 +1,10 @@
 Feedsquish, a feed reader.
 Copyright 2012 Matt Kenney
 Source code: https://github.com/mattkenney/feedsquish
-Language: Python 2.5
+Language: Python 2.6
 License: GNU Affero General Public License
+
+Feedsquish is based on an earlier project called Feedsqueeze.
 
 Feedsquish uses:
 1. Universal Feed Parser, http://www.feedparser.org/, by Mark Pilgrim
@@ -11,5 +13,6 @@ Feedsquish uses:
 3. py-dom-xpath, http://code.google.com/p/py-dom-xpath/
 4. Yapps 2, http://theory.stanford.edu/~amitp/yapps/, by Amit J. Patel.
 
-Versions of these libraries are included here for convenience.
+A version of Yapps 2 is included here for convenience because pip install
+failed.
 
