@@ -1,0 +1,2 @@
+# m h dom mon dow user command
+1,16,31,46 * * * * www-data /usr/bin/python /home/ubuntu/feedsquish/update.py 2>&1 >>/var/log/feedsquish-update.log

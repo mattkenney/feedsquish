@@ -1,0 +1,9 @@
+/var/log/feedsquish-update.log
+{
+    missingok
+    daily
+    rotate 9
+    create
+    compress
+    delaycompress
+}
