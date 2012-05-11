@@ -53,6 +53,7 @@ along with Feedsquish.  If not, see <http://www.gnu.org/licenses/>.
 <table class="wide"><tr><td class="single">
 <input name="feed" type="hidden" value="{{ parameters.feed }}" />
 <input name="show" type="hidden" value="{{ parameters.show }}" />
+<input name="date" type="hidden" value="{{ article.date }}" />
 <input name="next:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Next" />
 <input name="skip:{{ article.subid }}:{{ article.artid }}" type="submit" value="Next" />
 <input name="hide:{{ article.subid }}:{{ article.artid }}" type="submit" value="Hide &#38; Return" />
