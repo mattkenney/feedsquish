@@ -76,27 +76,28 @@ def action(context):
                 return context['request'].get_response(webob.exc.HTTPFound(location=location))
             else:
                 try:
-                    lst.append('fetching and parsing ' + sub['feedUrl'])
+                    lst.append('fetching and parsing ' + sub['feedUrl'] + '\n')
                     parser = feedparser.parse(sub['feedUrl'])
                     if hasattr(parser, 'status'):
-                        lst.append('status ' + str(parser.status))
+                        lst.append('status ' + str(parser.status) + '\n')
                     elif hasattr(parser, 'bozo_exception'):
-                        lst.append(str(parser.bozo_exception))
+                        lst.append(str(parser.bozo_exception) + '\n')
                     else:
-                        lst.append('feed error')
+                        lst.append('feed error\n')
                     if not (hasattr(parser, 'entries') and parser.entries):
-                        lst.append('feed has no entries')
+                        lst.append('feed has no entries\n')
                     else:
-                        lst.append('processing sample entry...')
+                        lst.append('processing sample entry...\n')
                         entry = parser.entries[0]
                         articleUrl = entry.get('link', '')
                         articleGuid = entry.get('guid', articleUrl)
                         feeds.get_article_content(articleUrl, articleGuid, sub, lst)
                 except Exception, e:
-                    lst.append('exception:')
+                    lst.append('exception:\n')
                     lst.append(str(e))
+                    lst.append('\n')
                     print traceback.format_exc()
-                context['testout'] = '\n'.join(lst)
+                context['testout'] = ''.join(lst)
     if sub:
         context['parameters']['feedUrl'] = sub['feedUrl']
         context['parameters']['feedName'] = sub['feedName']
