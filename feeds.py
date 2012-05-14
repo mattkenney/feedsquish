@@ -62,16 +62,20 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     if sub and sub['xpath']:
         key = key + ' ' + sub['xpath']
     key = "page/" + filters.encode_segment(key)
-    result = redis.get(key)
-    if result:
-        return result.decode('utf-8')
+    if not lstLog:
+        result = redis.get(key)
+        if result:
+            return result.decode('utf-8')
 
+    raw = None
     try:
         if lstLog:
             lstLog.append('fetching url:')
             lstLog.append(url)
+            lstLog.append('\n')
 
         # fetch the article
+        before = time.clock()
         f = urllib.urlopen(url)
         raw = f.read()
         base = f.geturl()
@@ -79,37 +83,63 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         encoding = params.get('charset')#, 'ISO-8859-1')
         f.close()
 
+        if lstLog:
+            lstLog.append(str(len(raw)))
+            lstLog.append(' bytes retrieved in ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds, encoding ')
+            lstLog.append(str(encoding))
+            lstLog.append('\n')
+
         # BeautifulSoup doesn't like hex character entities
         # so convert them to decimal
+        before = time.clock()
         raw = hex_char_entity.sub(lambda m: '&#' + str(int(m.group(1))) + ';', raw)
 
+        if lstLog:
+            lstLog.append('map entities ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
         # tag soup parse the article
+        before = time.clock()
         src = BeautifulSoup.BeautifulSoup(raw, fromEncoding=encoding, convertEntities='xhtml')
 
-        # make relative URLs absolute so they work in our site
-        for attr in [ 'action', 'background', 'cite', 'classid', 'codebase', 'data', 'href', 'longdesc', 'profile', 'src', 'usemap' ]:
-            for tag in src.findAll(attrs={attr:True}):
-                tag[attr] = urlparse.urljoin(base, tag[attr])
+        if lstLog:
+            lstLog.append('parse ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
 
         # sanitize the article markup - remove script, style, and more
         # also convert to xml.dom.minidom so we can use xpath
+        before = time.clock()
         doc = soup2dom(src)
 
+        if lstLog:
+            lstLog.append('sanitize ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
         # extract the parts we want
+        before = time.clock()
         parts = []
         if sub and sub['xpath']:
             if lstLog:
-                lstLog.append('extracting content using xpath...')
+                lstLog.append('extracting content using xpath...\n')
             for path in sub['xpath'].split('\n'):
-                if lstLog:
-                    lstLog.append(path)
                 parts.extend(xpath.find(path, doc))
         else:
             parts.append(doc.documentElement)
 
+        if lstLog:
+            lstLog.append('xpath ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
         # remove class and id attributes so they won't conflict with ours
         # this makes the content smaller too
         # we do this after xpath so xpath can use class and id
+        before = time.clock()
         for tag in doc.getElementsByTagName('*'):
             if tag.hasAttribute('class'):
                 tag.removeAttribute('class')
@@ -118,7 +148,28 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
             if tag.nodeName == 'a' and tag.hasAttribute('href'):
                 tag.setAttribute('target', '_blank')
 
+        if lstLog:
+            lstLog.append('clean ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
+        # make relative URLs absolute so they work in our site
+        before = time.clock()
+        cache = {}
+        for part in parts:
+            for attr in [ 'action', 'background', 'cite', 'classid', 'codebase', 'data', 'href', 'longdesc', 'profile', 'src', 'usemap' ]:
+                for tag in xpath.find('*[@' + attr + ']', part):
+                    value = tag.getAttribute(attr)
+                    value = urlparse.urljoin(base, value)
+                    tag.setAttribute(attr, value)
+
+        if lstLog:
+            lstLog.append('make urls absolute ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
         # convert to string
+        before = time.clock()
         result = u''
         for part in parts:
             result += u'<div>'
@@ -129,8 +180,14 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
             result += u'</div>'
 
         if lstLog:
-            lstLog.append('article size:')
+            lstLog.append('to string ')
+            lstLog.append(str(time.clock() - before))
+            lstLog.append(' seconds\n')
+
+        if lstLog:
+            lstLog.append('article size: ')
             lstLog.append(filters.format_IEEE1541(len(result)))
+            lstLog.append('\n')
 
         redis.setex(key, 20*60, result)
 
@@ -138,35 +195,24 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         logging.error("%s", pprint.pformat(err))
         text = str(err)
         if lstLog:
-            lstLog.append('exception:')
+            lstLog.append('exception:\n')
             lstLog.append(text)
-            if result:
-                result += '\n'
-            else:
-                result = ''
-            result += '<pre>\n'
-            result += escape(str(url))
-            result += '\n\n'
-            result += escape(text)
-            result += '\n</pre>\n<!--\n'
-            result += escape(traceback.format_exc())
-            result += '\n-->'
+            lstLog.append('source:\n')
+            lstLog.append(repr(raw))
+            lstLog.append('\n')
+        if result:
+            result += '\n'
+        else:
+            result = ''
+        result += '<pre>\n'
+        result += escape(str(url))
+        result += '\n\n'
+        result += escape(text)
+        result += '\n</pre>\n<!--\n'
+        result += escape(traceback.format_exc())
+        result += '\n-->'
 
     return result
-
-#def set_status_read(user, articleUrl, read):
-#    result = None
-#    for stat in selectAll(status, "SELECT * FROM status WHERE user = {0} AND articleUrl = {1}", user, articleUrl):
-#        result = stat
-#        if read and stat['read'] != read:
-#            sub = selectOne(subscription, "SELECT * FROM subscription WHERE user = {0} AND feedUrl = {1}", user, stat['feedUrl'])
-#            if sub and stat['read'] == unread:
-#                increment_counter(subscription, sub.name, -1, None)
-#            elif sub and read == unread:
-#                increment_counter(subscription, sub.name, 1, None)
-#            stat['read'] = read
-#            stat.save()
-#    return result
 
 def soup2dom(src, dst=None, doc=None):
     if doc and not dst:
