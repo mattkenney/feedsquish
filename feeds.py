@@ -94,7 +94,7 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         # BeautifulSoup doesn't like hex character entities
         # so convert them to decimal
         before = time.clock()
-        raw = hex_char_entity.sub(lambda m: '&#' + str(int(m.group(1))) + ';', raw)
+        raw = hex_char_entity.sub(lambda m: '&#' + str(int(m.group(1), 16)) + ';', raw)
 
         if lstLog:
             lstLog.append('map entities ')
@@ -124,8 +124,6 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         before = time.clock()
         parts = []
         if sub and sub['xpath']:
-            if lstLog:
-                lstLog.append('extracting content using xpath...\n')
             for path in sub['xpath'].split('\n'):
                 parts.extend(xpath.find(path, doc))
         else:
@@ -158,10 +156,10 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         cache = {}
         for part in parts:
             for attr in [ 'action', 'background', 'cite', 'classid', 'codebase', 'data', 'href', 'longdesc', 'profile', 'src', 'usemap' ]:
-                for tag in xpath.find('*[@' + attr + ']', part):
+                for tag in xpath.find('.//*[@' + attr + ']', part):
                     value = tag.getAttribute(attr)
-                    value = urlparse.urljoin(base, value)
-                    tag.setAttribute(attr, value)
+                    absolute = urlparse.urljoin(base, value)
+                    tag.setAttribute(attr, absolute)
 
         if lstLog:
             lstLog.append('make urls absolute ')
