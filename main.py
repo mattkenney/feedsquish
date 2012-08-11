@@ -26,7 +26,7 @@ import rupta
 config = {
     "idem.session.key": "beaker.session",
     "session.auto": True,
-    "session.cookie_expires": True,
+    "session.cookie_expires": 2592000,
     "session.key": "session",
     "session.secret": "b9f8649e-a29b-41b5-a9ed-1f30491a53c1",
     "session.type": "cookie",

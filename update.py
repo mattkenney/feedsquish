@@ -73,6 +73,8 @@ def updateAll():
             updateFeed(feedUrl, now, cutoff)
         except Exception, e:
             print e
+        # sleep to spread the server load out over time
+        time.sleep(30)
 
 if __name__ == '__main__':
     updateAll()

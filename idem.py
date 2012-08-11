@@ -22,16 +22,19 @@ import cgi
 import string
 
 import redis.client
-import passlib.hash
+import passlib.context
 import webob
 import webob.exc
 
 import filters
 
+ctx = passlib.context.CryptContext(schemes=['pbkdf2_sha1', 'pbkdf2_sha512'])
+
 _form_login = string.Template("""<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 <title>Sign In</title>
 </head>
@@ -66,6 +69,7 @@ _form_create = string.Template("""<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 <title>Create Account</title>
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 </head>
@@ -106,6 +110,7 @@ _form_change = string.Template("""<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta charset="UTF-8" />
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport" />
 <title>Change Password</title>
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 </head>
@@ -142,7 +147,7 @@ class Authenticator(object):
         self.session_key = config.get("idem.session.key", "session")
         self.user_key = config.get("idem.user.key", "REMOTE_USER")
         self.redis = redis.client.StrictRedis()
-        self.dummy = passlib.hash.pbkdf2_sha512.encrypt("password")
+        self.dummy = ctx.encrypt("password")
         self.auth_change_password = config.get("idem.auth_change_password", "/auth_change_password")
         self.auth_logout = config.get("idem.auth_logout", "/auth_logout")
 
@@ -163,12 +168,12 @@ class Authenticator(object):
         else:
             passwd = self.redis.hget(userid, "password")
             if passwd:
-                if passlib.hash.pbkdf2_sha512.verify(password, passwd):
-                    self.redis.hset(userid, "password", passlib.hash.pbkdf2_sha512.encrypt(password1))
+                if ctx.verify(password, passwd):
+                    self.redis.hset(userid, "password", ctx.encrypt(password1))
                     response = request.get_response(webob.exc.HTTPFound(location="/"))
                     return response(environ, start_response)
             else:
-                passlib.hash.pbkdf2_sha512.verify(password, self.dummy)
+                ctx.verify(password, self.dummy)
             message = "The current password you entered is incorrect."
         response = webob.Response()
         response.charset = "utf8"
@@ -197,7 +202,7 @@ class Authenticator(object):
             message = "Passwords do not match."
         else:
             userid = "user/" + filters.encode_segment(username)
-            if self.redis.hsetnx(userid, "password", passlib.hash.pbkdf2_sha512.encrypt(password1)):
+            if self.redis.hsetnx(userid, "password", ctx.encrypt(password1)):
                 session[self.user_key] = userid
                 response = request.get_response(webob.exc.HTTPFound(location=action))
                 return response(environ, start_response)
@@ -239,12 +244,12 @@ class Authenticator(object):
                 userid = "user/" + filters.encode_segment(username)
                 passwd = self.redis.hget(userid, "password")
                 if passwd:
-                    if passlib.hash.pbkdf2_sha512.verify(password, passwd):
+                    if ctx.verify(password, passwd):
                         session[self.user_key] = userid
                         response = request.get_response(webob.exc.HTTPFound(location=action))
                         return response(environ, start_response)
                 else:
-                    passlib.hash.pbkdf2_sha512.verify(password, self.dummy)
+                    ctx.verify(password, self.dummy)
                 message = "The username or password you entered is incorrect."
         response = webob.Response()
         response.charset = "utf8"
