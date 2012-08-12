@@ -176,7 +176,7 @@ class Authenticator(object):
                 ctx.verify(password, self.dummy)
             message = "The current password you entered is incorrect."
         response = webob.Response()
-        response.charset = "utf8"
+        response.charset = "UTF-8"
         response.text = unicode(_form_change.substitute(
             action=cgi.escape(action, True),
             message=cgi.escape(message, True),
@@ -208,7 +208,7 @@ class Authenticator(object):
                 return response(environ, start_response)
             message = "Username already exists."
         response = webob.Response()
-        response.charset = "utf8"
+        response.charset = "UTF-8"
         response.text = unicode(_form_create.substitute(
             action=cgi.escape(action, True),
             message=cgi.escape(message, True),
@@ -252,7 +252,7 @@ class Authenticator(object):
                     ctx.verify(password, self.dummy)
                 message = "The username or password you entered is incorrect."
         response = webob.Response()
-        response.charset = "utf8"
+        response.charset = "UTF-8"
         response.text = unicode(_form_login.substitute(
             action=cgi.escape(action, True),
             message=cgi.escape(message, True),
