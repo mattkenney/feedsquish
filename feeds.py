@@ -23,6 +23,7 @@ import hashlib
 import logging
 import pprint
 import re
+#import sys
 import time
 import traceback
 import urllib
@@ -45,6 +46,9 @@ redis = redis.client.StrictRedis()
 
 def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     result = None
+
+#    sys.stderr.write(str(articleUrl) + '\n')
+#    sys.stderr.flush()
 
     url = articleUrl
 

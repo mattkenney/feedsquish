@@ -87,6 +87,9 @@ def action(context):
     if showFilter:
         qs += '&' if qs else '?'
         qs += 'show=' + urllib.quote_plus(showFilter)
+    if context['parameters'].get('prefetch'):
+        qs += '&' if qs else '?'
+        qs += 'prefetch=1'
 
     if action == 'next' or action == 'skip':
         scoreLast = float(context['parameters'].get('date', 0))

@@ -18,6 +18,9 @@
 #
 
 import datetime
+import threading
+import urllib
+import urllib2
 
 import webob
 
@@ -42,15 +45,19 @@ def action(context):
     context['content'] = feeds.get_article_content(articleUrl, articleGuid, sub)
     context['article'] = feeds.makeUnicode(art)
 
-#    # prefetch the next article
-#    if stat:
-#        params = dict()
-#        params['user'] = user.email()
-#        params['date'] = stat.articleDate.isoformat()
-#        feedFilter = context['rupta_request'].params.get('feed')
-#        if feedFilter:
-#            params['feed'] = feedFilter
-#        if context['rupta_request'].params.get('show') == 'all':
-#            params['show'] = 'all'
-#        taskqueue.add(url='/admin/prefetch.html', params=params)
+    # prefetch the next article
+    if not context['parameters'].get('prefetch'):
+        params = dict()
+        params['feed'] = context['parameters'].get('feed', '')
+        params['show'] = context['parameters'].get('show', '')
+        params['date'] = art['date']
+        params['skip::'] = 1
+        params['prefetch'] = 1
+        cookie = context['request'].headers.get('Cookie', '')
+        fetch = threading.Thread(target=prefetch, args=(params, cookie))
+        fetch.daemon = True
+        fetch.start()
 
+def prefetch(params, cookie):
+    req = urllib2.Request('http://localhost:8080/', urllib.urlencode(params), { 'Cookie':cookie })
+    urllib2.urlopen(req)
