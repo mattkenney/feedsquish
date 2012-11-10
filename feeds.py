@@ -34,7 +34,7 @@ from xml.sax.saxutils import escape
 
 import redis.client
 
-import BeautifulSoup
+import bs4 as BeautifulSoup
 import xpath
 
 import filters
@@ -95,19 +95,9 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
             lstLog.append(str(encoding))
             lstLog.append('\n')
 
-        # BeautifulSoup doesn't like hex character entities
-        # so convert them to decimal
-        before = time.clock()
-        raw = hex_char_entity.sub(lambda m: '&#' + str(int(m.group(1), 16)) + ';', raw)
-
-        if lstLog:
-            lstLog.append('map entities ')
-            lstLog.append(str(time.clock() - before))
-            lstLog.append(' seconds\n')
-
         # tag soup parse the article
         before = time.clock()
-        src = BeautifulSoup.BeautifulSoup(raw, fromEncoding=encoding, convertEntities='xhtml')
+        src = BeautifulSoup.BeautifulSoup(raw, "html5lib", from_encoding=encoding)
 
         if lstLog:
             lstLog.append('parse ')
@@ -137,6 +127,9 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
             lstLog.append('xpath ')
             lstLog.append(str(time.clock() - before))
             lstLog.append(' seconds\n')
+            lstLog.append('xpath ')
+            lstLog.append(str(len(parts)))
+            lstLog.append(' parts\n')
 
         # remove class and id attributes so they won't conflict with ours
         # this makes the content smaller too
@@ -199,6 +192,8 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         if lstLog:
             lstLog.append('exception:\n')
             lstLog.append(text)
+            lstLog.append('stack:\n')
+            lstLog.append(traceback.format_exc())
             lstLog.append('source:\n')
             lstLog.append(repr(raw))
             lstLog.append('\n')
@@ -230,7 +225,14 @@ def soup2dom(src, dst=None, doc=None):
             if dst:
                 dst.appendChild(doc.createTextNode(' [' + tag + '] '))
             return doc
-        attrs = dict((x[0].lower(), x[1]) for x in src.attrs)
+        attrs = dict()
+        for key in src.attrs:
+            value = src[key]
+            if isinstance(value, list):
+                value = u' '.join(value)
+            if not isinstance(value, unicode) or value.lower().startswith(u'javascript:'):
+                value = u''
+            attrs[key] = value
         if doc:
             # create the element
             if tag == 'iframe':
