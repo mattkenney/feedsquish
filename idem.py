@@ -38,10 +38,10 @@ _form_login = string.Template("""<!DOCTYPE html>
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 <title>Sign In</title>
 </head>
-<body class="idem.body">
+<body class="idem-body">
 <form action="$action" method="post">
-<div class="idem.message">$message</div>
-<table class="idem.table">
+<div class="idem-message">$message</div>
+<table class="idem-table">
 <tr>
 <td><label for="username">Username:</label></td>
 <td><input id="username" name="idem.username" type="text" value="$username" /></td>
@@ -57,7 +57,7 @@ _form_login = string.Template("""<!DOCTYPE html>
 </table>
 </form>
 <form action="$action" method="post">
-<div class="idem.switch">
+<div class="idem-switch">
 <input name="idem.create" type="submit" value="Create an New Account" />
 </div>
 </form>
@@ -73,11 +73,11 @@ _form_create = string.Template("""<!DOCTYPE html>
 <title>Create Account</title>
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 </head>
-<body class="idem.body">
+<body class="idem-body">
 <form action="$action" method="post">
 <input name="idem.create" type="hidden" value="" />
-<div class="idem.message">$message</div>
-<table class="idem.table">
+<div class="idem-message">$message</div>
+<table class="idem-table">
 <tr>
 <td><label for="username">Username:</label></td>
 <td><input id="username" name="idem.username" type="text" value="$username" /></td>
@@ -91,6 +91,13 @@ _form_create = string.Template("""<!DOCTYPE html>
 <td><input id="password2" name="idem.password2" type="password" value="$password2" /></td>
 </tr>
 <tr>
+<td colspan="2">
+<p>By clicking Create Account, you agree<br />
+to our <a href="/policies/termsofuse.html" target="_blank">Terms of Use</a> and
+<a href="/policies/privacy.html" target="_blank">Privacy Policy</a>.</p>
+</td>
+</tr>
+<tr>
 <td></td>
 <td><input type="submit" value="Create Account" /></td>
 </tr>
@@ -98,7 +105,7 @@ _form_create = string.Template("""<!DOCTYPE html>
 </form>
 </form>
 <form action="$action">
-<div class="idem.switch">
+<div class="idem-switch">
 <input type="submit" value="Sign In with Existing Account" />
 </div>
 </form>
@@ -114,11 +121,11 @@ _form_change = string.Template("""<!DOCTYPE html>
 <title>Change Password</title>
 <link href="/css/default.css" rel="stylesheet" type="text/css" />
 </head>
-<body class="idem.body">
+<body class="idem-body">
 <form action="$action" method="post">
 <input name="idem.change" type="hidden" value="" />
-<div class="idem.message">$message</div>
-<table class="idem.table">
+<div class="idem-message">$message</div>
+<table class="idem-table">
 <tr>
 <td><label for="password">Current password:</label></td>
 <td><input id="password" name="idem.password" type="password" value="$password" /></td>

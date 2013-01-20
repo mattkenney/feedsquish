@@ -1,5 +1,5 @@
 /*
- * Copyright 2012 Matt Kenney
+ * Copyright 2012, 2013 Matt Kenney
  *
  * This file is part of Feedsquish.
  *
@@ -97,6 +97,11 @@ td
     font-size:50%;
 }
 
+.idem-switch
+{
+    margin-top:2ex;
+}
+
 .index
 {
     background-color:#fff;
@@ -176,4 +181,3 @@ td
     width:100%;
     white-space:nowrap;
 }
-
