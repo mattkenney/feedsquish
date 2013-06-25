@@ -18,6 +18,7 @@
 #
 import base64
 import cgi
+import cookielib
 import datetime
 import hashlib
 import logging
@@ -26,7 +27,7 @@ import re
 #import sys
 import time
 import traceback
-import urllib
+import urllib2
 import urlparse
 import uuid
 import xml.dom.minidom
@@ -80,7 +81,12 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
 
         # fetch the article
         before = time.clock()
-        f = urllib.urlopen(url)
+        jar = cookielib.CookieJar()
+        proc = urllib2.HTTPCookieProcessor(jar)
+        opener = urllib2.build_opener(proc)
+        opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+        f = opener.open(url)
+        #f = urllib.urlopen(url)
         raw = f.read()
         base = f.geturl()
         mime, params = cgi.parse_header(f.info().getheader('Content-Type'))
