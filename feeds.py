@@ -24,7 +24,6 @@ import hashlib
 import logging
 import pprint
 import re
-#import sys
 import time
 import traceback
 import urllib2
@@ -44,6 +43,17 @@ hex_char_entity = re.compile('&#x([0-9a-fA-F]+);')
 unread = datetime.datetime.max.isoformat()
 
 redis = redis.client.StrictRedis()
+
+class LoggingHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
+    def __init__(self, log):
+        self.log = log
+
+    def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        if self.log is not None:
+            self.log.append('redirecting to: ')
+            self.log.append(newurl)
+            self.log.append('\n')
+        return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, hdrs, newurl)
 
 def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     result = None
@@ -75,7 +85,7 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     raw = None
     try:
         if lstLog:
-            lstLog.append('fetching url:')
+            lstLog.append('fetching url: ')
             lstLog.append(url)
             lstLog.append('\n')
 
@@ -83,10 +93,10 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         before = time.clock()
         jar = cookielib.CookieJar()
         proc = urllib2.HTTPCookieProcessor(jar)
-        opener = urllib2.build_opener(proc)
-        opener.addheaders = [('User-Agent', 'Mozilla/5.0')]
+        redir = LoggingHTTPRedirectHandler(lstLog)
+        opener = urllib2.build_opener(proc, redir)
+        opener.addheaders.append(('Accept', '*/*'))
         f = opener.open(url)
-        #f = urllib.urlopen(url)
         raw = f.read()
         base = f.geturl()
         mime, params = cgi.parse_header(f.info().getheader('Content-Type'))
@@ -328,4 +338,3 @@ def update_user_maybe(userid):
     if True or not redis.exists(key):
         update_user(userid)
         redis.setex(key, 600, "1")
-
