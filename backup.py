@@ -21,7 +21,7 @@ import datetime
 
 import boto
 
-filename = '/var/lib/redis/dump.rdb'
+filename = '/var/lib/redis/redis.rdb'
 
 def backup():
     now = datetime.datetime.utcnow()
