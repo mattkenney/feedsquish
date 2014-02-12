@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Matt Kenney
+# Copyright 2012, 2014 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -242,8 +242,8 @@ class Authenticator(object):
         action = request.headers.get('X-Forwarded-Path', request.path)
         username = request.params.get("idem.username", "")
         password = request.params.get("idem.password", "")
-        if action == environ["PATH_INFO"] and environ["PATH_INFO"] == self.auth_logout:
-            action = "/"
+        if environ["PATH_INFO"] == self.auth_logout:
+            action = "./"
         if request.method == "POST":
             if request.params.has_key("idem.create"):
                 return self._create_user(environ, start_response, request, session)
