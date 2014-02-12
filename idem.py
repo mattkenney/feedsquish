@@ -242,7 +242,7 @@ class Authenticator(object):
         action = request.headers.get('X-Forwarded-Path', request.path)
         username = request.params.get("idem.username", "")
         password = request.params.get("idem.password", "")
-        if action == environ["PATH_INFO"] == self.auth_logout:
+        if action == environ["PATH_INFO"] and environ["PATH_INFO"] == self.auth_logout:
             action = "/"
         if request.method == "POST":
             if request.params.has_key("idem.create"):
