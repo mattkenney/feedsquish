@@ -52,20 +52,19 @@ td
     padding:0 0.5ex;
 }
 
-.action
-{
-    font-size:75%;
-}
-
 .buttons
 {
+    background-color:#e1e1e1;
     border-bottom:1px solid #cbc1b7;
+    height:36px;
+    position:fixed;
+    width:100%;
 }
 
 .content
 {
     background-color:#fff;
-    padding:0.5ex;
+    padding:40px 4px 4px;
 }
 
 .dateline
@@ -107,6 +106,7 @@ td
 .index
 {
     background-color:#fff;
+    padding-top:36px;
 }
 
 .index-table
