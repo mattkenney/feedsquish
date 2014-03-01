@@ -55,7 +55,7 @@ td
 .buttons
 {
     background-color:#e1e1e1;
-    border-bottom:1px solid #cbc1b7;
+    border-bottom:1px solid #909090;
     height:47px;
     position:fixed;
     width:100%;
@@ -64,7 +64,7 @@ td
 .content
 {
     background-color:#fff;
-    padding:40px 4px 4px;
+    padding:51px 4px 4px;
 }
 
 .dateline
@@ -88,7 +88,7 @@ td
 
 .footer
 {
-    border-top:1px solid #cbc1b7;
+    border-top:1px solid #909090;
     margin:0;
     padding-bottom:1ex;
 }
@@ -106,7 +106,7 @@ td
 .index
 {
     background-color:#fff;
-    padding-top:36px;
+    padding-top:47px;
 }
 
 .index-table
@@ -165,7 +165,7 @@ td
 .testout-pre
 {
     background-color:#fff;
-    border:1px solid #cbc1b7;
+    border:1px solid #909090;
     margin:0.5ex;
     padding:0.5ex;
 }
