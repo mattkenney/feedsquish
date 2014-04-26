@@ -1,5 +1,5 @@
 #
-# Copyright 2012 Matt Kenney
+# Copyright 2012, 2014 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -42,7 +42,7 @@ def action(context):
     art['articleDate'] = str(datetime.datetime.utcfromtimestamp(float(art['date'])))
     art['articleUrl'] = articleUrl
     articleGuid = art.get('guid') if art else None
-    context['content'] = feeds.get_article_content(articleUrl, articleGuid, sub)
+    context['content'] = feeds.get_article_content(articleUrl, articleGuid, sub, [])
     context['article'] = feeds.makeUnicode(art)
 
     # prefetch the next article

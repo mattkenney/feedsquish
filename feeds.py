@@ -1,5 +1,5 @@
 #
-# Copyright 2012 Matt Kenney
+# Copyright 2012, 2014 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -201,6 +201,11 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
             lstLog.append('\n')
 
         redis.setex(key, 20*60, result)
+
+        if lstLog and len(result) == 0:
+            result += '<pre>\n'
+            result += escape('\n'.join(lstLog))
+            result += '\n</pre>'
 
     except Exception, err:
         logging.error("%s", pprint.pformat(err))
