@@ -113,6 +113,9 @@ def action(context):
         context['newer'] = qs + ('&' if qs else '?') + 'offset=' + str(offset - 50)
     if len(ids) - offset > 50:
         context['older'] = qs + ('&' if qs else '?') + 'offset=' + str(offset + 50)
+    oldest = len(ids) - 50
+    if oldest > 0 and oldest - offset > 50:
+        context['oldest'] = qs + ('&' if qs else '?') + 'offset=' + str(oldest)
 
     articles = []
     for tup in ids[offset:offset+50]:

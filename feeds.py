@@ -44,11 +44,25 @@ unread = datetime.datetime.max.isoformat()
 
 redis = redis.client.StrictRedis()
 
+def adjust_url(url, sub):
+    if sub:
+        if (sub['prefixRemove'] or sub['prefixAdd']) and url.startswith(sub['prefixRemove']):
+            url = sub['prefixAdd'] + url[len(sub['prefixRemove']):]
+        if (sub['suffixRemove'] or sub['suffixAdd']) and url.endswith(sub['suffixRemove']):
+            url = url[:(len(url) - len(sub['suffixRemove']))]
+            if sub['suffixAdd'][:1] == '?' and '?' in url:
+                url += '&' + sub['suffixAdd'][1:]
+            else:
+                url += sub['suffixAdd']
+    return url
+
 class LoggingHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
-    def __init__(self, log):
+    def __init__(self, sub, log):
+        self.sub = sub
         self.log = log
 
     def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        newurl = adjust_url(newurl, self.sub)
         if self.log is not None:
             self.log.append('redirecting to: ')
             self.log.append(newurl)
@@ -64,13 +78,9 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     url = articleUrl
 
     # optionally modify URL before fetching the article
-    if sub:
-        if articleGuid and sub['useGuid'] == '1':
-            url = articleGuid
-            if (sub['prefixRemove'] or sub['prefixAdd']) and url.startswith(sub['prefixRemove']):
-                url = sub['prefixAdd'] + url[len(sub['prefixRemove']):]
-        if (sub['suffixRemove'] or sub['suffixAdd']) and url.endswith(sub['suffixRemove']):
-            url = url[:(len(url) - len(sub['suffixRemove']))] + sub['suffixAdd']
+    if sub and articleGuid and sub['useGuid'] == '1':
+        url = articleGuid
+    url = adjust_url(url, sub)
 
     # use cached copy if present
     key = url
@@ -93,7 +103,7 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         before = time.clock()
         jar = cookielib.CookieJar()
         proc = urllib2.HTTPCookieProcessor(jar)
-        redir = LoggingHTTPRedirectHandler(lstLog)
+        redir = LoggingHTTPRedirectHandler(sub, lstLog)
         opener = urllib2.build_opener(proc, redir)
         opener.addheaders.append(('Accept', '*/*'))
         f = opener.open(url)

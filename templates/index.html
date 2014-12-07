@@ -55,10 +55,11 @@ Feedsquish
 {% endfor %}
 </table>
 </div>
-{% if newer or older %}
+{% if newer or older or oldest %}
 <div class="footer right">
 {% if newer %}<a href="{{ newer }}" class="action">&lt;newer</a>{% endif %}
 {% if older %}<a href="{{ older }}" class="action">older&gt;</a>{% endif %}
+{% if oldest %}<a href="{{ oldest }}" class="action">oldest&gt;|</a>{% endif %}
 </div>
 {% endif %}
 </form>
