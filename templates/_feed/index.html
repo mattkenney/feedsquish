@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
 {#
 
-Copyright 2012 Matt Kenney
+Copyright 2012, 2015 Matt Kenney
 
 This file is part of Feedsquish.
 
@@ -55,7 +55,7 @@ Note: Feedsquish purges article listings after 60 days, whether you've read them
 {% if testout %}
 <div class="testout">
 Test Result:
-<pre class="testout-pre">{{ testout }}</pre>
+<pre class="testout-pre">{{ testout|e }}</pre>
 </div>
 {% endif %}
 </div>

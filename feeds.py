@@ -1,5 +1,5 @@
 #
-# Copyright 2012, 2014 Matt Kenney
+# Copyright 2012, 2014, 2015 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -105,8 +105,14 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         proc = urllib2.HTTPCookieProcessor(jar)
         redir = LoggingHTTPRedirectHandler(sub, lstLog)
         opener = urllib2.build_opener(proc, redir)
-        opener.addheaders.append(('Accept', '*/*'))
-        f = opener.open(url)
+#        opener.addheaders.append(('Accept', '*/*'))
+#        f = opener.open(url)
+        req = urllib2.Request(url, headers={
+                'Accept':'*/*',
+                'Host':urlparse.urlparse(url).netloc,
+                'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0'
+            })
+        f = opener.open(req)
         raw = f.read()
         base = f.geturl()
         mime, params = cgi.parse_header(f.info().getheader('Content-Type'))
@@ -223,10 +229,13 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         if lstLog:
             lstLog.append('exception:\n')
             lstLog.append(text)
-            lstLog.append('stack:\n')
+            lstLog.append('\nstack:\n')
             lstLog.append(traceback.format_exc())
             lstLog.append('source:\n')
             lstLog.append(repr(raw))
+            if hasattr(err, 'read'):
+                lstLog.append('\nbody:\n')
+                lstLog.append(err.read())
             lstLog.append('\n')
         if result:
             result += '\n'
