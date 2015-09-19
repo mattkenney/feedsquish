@@ -52,6 +52,11 @@ td
     padding:0 0.5ex;
 }
 
+.article
+{
+    max-width:66ex;
+}
+
 .buttons
 {
     background-color:#e1e1e1;
