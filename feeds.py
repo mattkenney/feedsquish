@@ -67,7 +67,7 @@ class LoggingHTTPRedirectHandler(urllib2.HTTPRedirectHandler):
             self.log.append('redirecting to: ')
             self.log.append(newurl)
             self.log.append('\n')
-        return urllib2.HTTPRedirectHandler.redirect_request(self, req, fp, code, msg, hdrs, newurl)
+        return make_request(newurl)
 
 def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
     result = None
@@ -107,11 +107,7 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         opener = urllib2.build_opener(proc, redir)
 #        opener.addheaders.append(('Accept', '*/*'))
 #        f = opener.open(url)
-        req = urllib2.Request(url, headers={
-                'Accept':'*/*',
-                'Host':urlparse.urlparse(url).netloc,
-                'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0'
-            })
+        req = make_request(url)
         f = opener.open(req)
         raw = f.read()
         base = f.geturl()
@@ -250,6 +246,13 @@ def get_article_content(articleUrl, articleGuid, sub, lstLog=None):
         result += '\n-->'
 
     return result
+
+def make_request(url):
+    return urllib2.Request(url, headers={
+            'Accept':'*/*',
+            'Host':urlparse.urlparse(url).netloc,
+            'User-Agent':'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:40.0) Gecko/20100101 Firefox/40.0'
+        })
 
 def soup2dom(src, dst=None, doc=None):
     if doc and not dst:
