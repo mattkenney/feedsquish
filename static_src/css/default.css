@@ -54,7 +54,13 @@ td
 
 .article
 {
-    max-width:66ex;
+/*
+    background-image: linear-gradient(rgba(0, 0, 0, 0.05) 1.75em, transparent 0);
+    background-size: auto 3.5em;
+*/
+    line-height: 1.75em;
+    max-width: 66ex;
+    padding: 0 0.3em;
 }
 
 .buttons
