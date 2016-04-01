@@ -11,6 +11,7 @@ function move (evt) {
   var delta = evt.touches[0].clientX - x;
   if (delta > threshold) {
     cancel();
+    history.back();
   } else if (delta < -threshold) {
     cancel();
     document.getElementById('hide-next').click();
