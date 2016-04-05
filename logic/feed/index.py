@@ -1,5 +1,5 @@
 #
-# Copyright 2012 Matt Kenney
+# Copyright 2012, 2016 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -20,6 +20,16 @@
 import feeds
 
 def action(context):
+    # for night mode on/off
+    if context['request'].method == 'POST':
+        bodyclass = context['bodyclass']
+        if context['parameters'].get('night-on'):
+            bodyclass = 'night'
+        if context['parameters'].get('night-off'):
+            bodyclass = ''
+        context['WSGI'].get('beaker.session')['bodyclass'] = bodyclass
+        context['bodyclass'] = bodyclass
+
     #LATER: implement "next" link for the next 50
     feeders = []
     for subid in feeds.redis.sort(context['user'] + "/subs", None, None, "*->feedName", None, False, True):

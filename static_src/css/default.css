@@ -166,16 +166,33 @@ td
     width:1%;
 }
 
+html.night,
 .night input[type=submit],
 .night select,
 .night .buttons,
 .night .content,
 .night .footer,
 .night .index,
-.night .odd
+.night .odd,
+.night .setup
 {
-  background-color: #000;
-  color: #999;
+    background-color: #000;
+    color: #999;
+}
+
+.night .night-off
+{
+    display:none;
+}
+
+.night-on
+{
+    display:none;
+}
+
+.night .night-on
+{
+    display:block;
 }
 
 .odd
@@ -196,7 +213,7 @@ td
 
 .setup
 {
-    margin:0.5ex;
+    padding:0.5ex;
 }
 
 .single

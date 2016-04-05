@@ -1,7 +1,7 @@
 {% extends "_base.html" %}
 {#
 
-Copyright 2012, 2014 Matt Kenney
+Copyright 2012, 2014, 2016 Matt Kenney
 
 This file is part of Feedsquish.
 
@@ -34,5 +34,10 @@ Feeds:
 <a href="add.html" class="action">add</a>
 <br /><br />
 <a href="../auth_logout" class="action">sign out</a>
+<br /><br />
+<form method="post" action="{{ root }}{{ request.path }}">
+<input class="night-off" name="night-on" type="submit" value="turn on night mode" />
+<input class="night-on" name="night-off" type="submit" value="turn off night mode" />
+<form>
 </div>
 {% endblock %}

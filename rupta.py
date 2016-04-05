@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 #
-# Copyright 2012 Matt Kenney
+# Copyright 2012, 2016 Matt Kenney
 #
 # This file is part of Feedsquish.
 #
@@ -128,6 +128,10 @@ def application(environ, start_response):
     context['user'] = environ["REMOTE_USER"]
     context['WSGI'] = environ
     environ['PATH_TRANSLATED'] = path_translated
+
+    # for night mode
+    bodyclass = environ.get("beaker.session").get("bodyclass")
+    context['bodyclass'] = bodyclass if bodyclass else ''
 
     # call the action method in the action module if it exists
     response = module.action(context) if module else None
