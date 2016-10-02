@@ -292,6 +292,13 @@ def soup2dom(src, dst=None, doc=None):
             # so we switch [body] to [div]
             if tag == 'body':
                 tag = 'div'
+            # we strip javascript, so we switch [noscript] to [div]
+            # so it will be displayed
+            if tag == 'noscript' and hasattr(src, 'string'):
+                tag = 'div'
+                # html5lib treats [noscript] content as CDATA
+                # so we need to parse it
+                src = BeautifulSoup.BeautifulSoup(src.string, 'html5lib').html
             # create the element and descend
             elem = doc.createElement(tag);
             dst.appendChild(elem)
